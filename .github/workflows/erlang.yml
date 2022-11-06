@@ -23,6 +23,7 @@ jobs:
     - name: Compile
       run: rebar3 compile
     - name: Tidy
-      run: rebar3 lint
+      run: rebar3 update
+           rebar3 lint
     - name: Run tests
       run: rebar3 do eunit, ct
