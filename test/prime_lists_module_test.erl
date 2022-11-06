@@ -1,11 +1,9 @@
 -module (prime_lists_module_test).
 
--export ([primeListsModuleTest/0]).
-
 -import (prime_lists, [getPrime/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
-primeListsModuleTest() ->
+prime_lists_test() ->
     ExpectedResult = 104743,
     ?assertEqual(ExpectedResult, getPrime()).

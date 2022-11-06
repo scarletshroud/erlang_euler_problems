@@ -34,13 +34,13 @@ findPermutation(Numbers, I, Limit) ->
     if 
         (I == Limit) -> Numbers;
         (I < Limit) -> 
-            NextPermutation = nextPermutation(Numbers, 10),
+            NextPermutation = nextPermutation(Numbers, 4),
             findPermutation(NextPermutation, I + 1, Limit)
     end.
 
 getPermutation() ->
-    Numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-    findPermutation(Numbers, 1, 1000000). 
+    Numbers = [1, 2, 3, 4],
+    findPermutation(Numbers, 1, 24). 
 
 start() ->
     Result = getPermutation(),
