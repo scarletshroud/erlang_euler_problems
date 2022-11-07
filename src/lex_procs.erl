@@ -15,19 +15,19 @@ findSuffix(Numbers, I, PrevElement) ->
         (PrevElement =< CurrentElement) -> findSuffix(Numbers, I - 1, CurrentElement)
     end.
 
-findMin(Numbers, I, Max) ->
+findSuffixMax(Numbers, I, Max) ->
     CurrentElement = lists:nth(I, Numbers), 
     if
         (I == 1) -> I;
         (Max < CurrentElement) -> I;
-        (Max >= CurrentElement) -> findMin(Numbers, I - 1, Max)
+        (Max >= CurrentElement) -> findSuffixMax(Numbers, I - 1, Max)
     end. 
 
 nextPermutation() ->
     receive
         {From, Numbers, Size} -> 
             Suffix = findSuffix(Numbers, Size, lists:nth(Size, Numbers)),
-            Min = findMin(Numbers, Size, lists:nth(Suffix, Numbers)),
+            Min = findSuffixMax(Numbers, Size, lists:nth(Suffix, Numbers)),
             NewList = swap(Numbers, Suffix, Min),
             {FirstPart, SecondPart} = lists:split(Suffix, NewList),
             From ! lists:append(FirstPart, lists:sort(SecondPart)),
