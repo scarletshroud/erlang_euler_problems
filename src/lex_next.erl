@@ -10,7 +10,7 @@ swap(List, S1, S2) ->
 findSuffix(Numbers, I, PrevElement) ->
     CurrentElement = lists:nth(I, Numbers),
     if 
-        (I == 1) -> I + 1;
+        (I == 1) -> I;
         (PrevElement > CurrentElement) -> I;
         (PrevElement =< CurrentElement) -> findSuffix(Numbers, I - 1, CurrentElement)
     end.
@@ -30,17 +30,17 @@ nextPermutation(Numbers, Size) ->
     {FirstPart, SecondPart} = lists:split(Suffix, NewList),
     lists:append(FirstPart, lists:sort(SecondPart)).
 
-findPermutation(Numbers, I, Limit) ->
+findPermutation(Numbers, Size, I, Limit) ->
     if 
         (I == Limit) -> Numbers;
         (I < Limit) -> 
-            NextPermutation = nextPermutation(Numbers, 4),
-            findPermutation(NextPermutation, I + 1, Limit)
+            NextPermutation = nextPermutation(Numbers, Size),
+            findPermutation(NextPermutation, Size, I + 1, Limit)
     end.
 
 getPermutation() ->
-    Numbers = [1, 2, 3, 4],
-    findPermutation(Numbers, 1, 24). 
+    Numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    findPermutation(Numbers, 10, 1, 1000000). 
 
 start() ->
     Result = getPermutation(),

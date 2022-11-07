@@ -10,7 +10,7 @@ swap(List, S1, S2) ->
 findSuffix(Numbers, I, PrevElement) ->
     CurrentElement = lists:nth(I, Numbers),
     if 
-        (I == 1) -> I + 1;
+        (I == 1) -> I;
         (PrevElement > CurrentElement) -> I;
         (PrevElement =< CurrentElement) -> findSuffix(Numbers, I - 1, CurrentElement)
     end.
@@ -37,20 +37,20 @@ nextPermutation() ->
             nextPermutation()
     end.    
 
-findPermutation(Pid, Numbers, I, Limit) ->
+findPermutation(Pid, Numbers, Size, I, Limit) ->
     if 
         (I == Limit) -> Numbers;
         (I < Limit) -> 
-            Pid ! {self(), Numbers, 4},
+            Pid ! {self(), Numbers, Size},
             receive
-                Response -> findPermutation(Pid, Response, I + 1, Limit)
+                Response -> findPermutation(Pid, Response, Size, I + 1, Limit)
             end
     end.
 
 getPermutation() -> 
-    Numbers = [1, 2, 3, 4],
+    Numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     Pid = spawn(fun() -> nextPermutation() end),
-    findPermutation(Pid, Numbers, 1, 24).
+    findPermutation(Pid, Numbers, 10, 1, 1000000).
 
 start() ->
     Result = getPermutation(),
