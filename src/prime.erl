@@ -4,26 +4,23 @@
  
 isPrime(Number) -> isPrime(Number, 2).
 isPrime(Number, Counter) ->
-    if
-        (Number rem Counter == 0) -> false;
-        (Number rem Counter /= 0) ->
+    case Number rem Counter of 
+        (0) -> false;
+        (_) ->
             Limit = sqrt(Number),
             if 
-                Counter < Limit -> isPrime(Number, Counter + 1);
-                Counter >= Limit -> true
+                (Counter < Limit) -> isPrime(Number, Counter + 1);
+                (Counter >= Limit) -> true
             end
     end.
  
 findPrime(Number, 10001) -> Number - 2;
 findPrime(Number, Counter) ->
-    Prime = isPrime(Number),
-    if
-        (Prime == true) -> findPrime(Number + 2, Counter + 1);
-        (Prime == false) -> findPrime(Number + 2, Counter)
+    case isPrime(Number) of
+        (true) -> findPrime(Number + 2, Counter + 1);
+        (false) -> findPrime(Number + 2, Counter)
     end.
 
 getPrime() -> findPrime(3, 1).
 
-start() ->
-    X = findPrime(3, 1),
-    io:fwrite("~w\n", [X]).
+start() -> io:fwrite("~w\n", [findPrime(3, 1)]).

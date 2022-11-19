@@ -9,9 +9,9 @@ nextDigit(Numbers, Fact, I, FactI, Limit) ->
     if  
         (Amount >= Limit) -> {I - 1, lists:nth(I, Numbers)};
         (Amount < Limit) ->
-            if 
-                (length(Numbers) == 1) -> {I, lists:nth(I, Numbers)};
-                (length(Numbers) /= 1) -> nextDigit(Numbers, Fact, I + 1, FactI, Limit)
+            case length(Numbers) of
+                (1) -> {I, lists:nth(I, Numbers)};
+                (_) -> nextDigit(Numbers, Fact, I + 1, FactI, Limit)
             end
     end.
  
@@ -21,10 +21,7 @@ permutation(Numbers, Fact, Result, I, FactI, Limit) when I =< 10 ->
     permutation(lists:delete(element(2, Digit), Numbers), Fact, [element(2, Digit) | Result], I + 1, FactI + 1, Limit - lists:nth(FactI, Fact) * element(1, Digit)).
 
 getPermutation() ->
-    Numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     Fact = generateFact([1, 1], 2, 1),
-    permutation(Numbers, Fact, [], 1, 1, 1000000).
+    permutation([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], Fact, [], 1, 1, 1000000).
 
-start() ->
-    Result = getPermutation(),
-    io:fwrite("~w~n", [Result]).
+start() -> io:fwrite("~w~n", [getPermutation()]).
