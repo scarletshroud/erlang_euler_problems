@@ -25,5 +25,7 @@ jobs:
     - name: Tidy
       run: rebar3 update
            rebar3 lint
+    - name: Format
+      run: rebar3 steamroll
     - name: Run tests
       run: rebar3 do eunit, ct
