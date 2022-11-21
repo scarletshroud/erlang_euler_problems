@@ -13,9 +13,9 @@ isPrime(Number, Counter) ->
 
     (_) ->
       Limit = sqrt(Number),
-      if
-        (Counter < Limit) -> isPrime(Number, Counter + 1);
-        (Counter >= Limit) -> true
+      case (Counter >= Limit) of
+        (true) -> true;
+        (false) -> isPrime(Number, Counter + 1)
       end
   end.
 

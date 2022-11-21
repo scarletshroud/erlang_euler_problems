@@ -7,10 +7,10 @@ generateFact(List, I, Acc) when I < 9 -> generateFact([I * Acc | List], I + 1, I
 
 nextDigit(Numbers, Fact, I, FactI, Limit) ->
   Amount = I * lists:nth(FactI, Fact),
-  if
-    (Amount >= Limit) -> {I - 1, lists:nth(I, Numbers)};
+  case (Amount >= Limit) of
+    (true) -> {I - 1, lists:nth(I, Numbers)};
 
-    (Amount < Limit) ->
+    (false) ->
       case length(Numbers) of
         (1) -> {I, lists:nth(I, Numbers)};
         (_) -> nextDigit(Numbers, Fact, I + 1, FactI, Limit)

@@ -11,17 +11,17 @@ swap(List, S1, S2) ->
 
 findSuffix(Numbers, I, PrevElement) ->
   CurrentElement = lists:nth(I, Numbers),
-  if
-    (I == 1) or (PrevElement > CurrentElement) -> I;
-    (PrevElement =< CurrentElement) -> findSuffix(Numbers, I - 1, CurrentElement)
+  case (I == 1) or (PrevElement > CurrentElement) of
+    true -> I;
+    false -> findSuffix(Numbers, I - 1, CurrentElement)
   end.
 
 
 findSuffixMax(Numbers, I, Max) ->
   CurrentElement = lists:nth(I, Numbers),
-  if
-    (I == 1) or (Max < CurrentElement) -> I;
-    (Max >= CurrentElement) -> findSuffixMax(Numbers, I - 1, Max)
+  case (I == 1) or (Max < CurrentElement) of
+    true -> I;
+    false -> findSuffixMax(Numbers, I - 1, Max)
   end.
 
 
