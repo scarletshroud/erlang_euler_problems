@@ -6,7 +6,7 @@
 -import(lex, [getPermutation/0]).
 -import(lex_bit, [getPermutationByBitOperations/0]).
 -import(lex_next, [getPermutationByCurrent/0]).
--import(lex_procs, [getPermutationFromProc/0]).
+-import(lex_procs, [find_million_permutation/0, find_million_permutation_by_drop/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -22,4 +22,4 @@ lex_next_test() ->
   ?assertEqual(ExpectedResult, getPermutation()),
   ?assertEqual(ExpectedResult, getPermutationByBitOperations()),
   ?assertEqual(ExpectedResult, getPermutationByCurrent()),
-  ?assertEqual(ExpectedResult, getPermutationFromProc()).
+  ?assertEqual(ExpectedResult, find_million_permutation()).
