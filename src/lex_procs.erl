@@ -28,25 +28,21 @@ find_suffix_max(Permutation, I, Max) ->
   end.
 
 
-take_permutations(_, _, Acc, I, Limit) when I >= Limit -> lists:reverse(Acc);
+take_permutations(_, CurrentPermutation, I, Limit) when I >= Limit -> CurrentPermutation.
 
-take_permutations(GeneratorPid, CurrentPermutation, Acc, I, Limit) when I < Limit ->
-  NextPermutation = get_permutation(GeneratorPid, CurrentPermutation),
-  take_permutations(GeneratorPid, NextPermutation, [NextPermutation | Acc], I + 1, Limit).
+take_permutations(GeneratorPid, I, Limit) when I < Limit ->
+  NextPermutation = get_permutation(GeneratorPid),
+  take_permutations(GeneratorPid, NextPermutation, I + 1, Limit).
 
-
-take_permutations(GeneratorPid, CurrentPermutation, Limit) ->
-  take_permutations(GeneratorPid, CurrentPermutation, [], 1, Limit).
-
-drop_permutations(_, _, Acc, I, _) when I >= ?MAX_PERMUTATION_NUMBER -> lists:reverse(Acc);
+drop_permutations(_, CurrentPermutation, I, _) when I >= ?MAX_PERMUTATION_NUMBER -> lists:reverse(Acc);
 
 drop_permutations(GeneratorPid, CurrentPermutation, Acc, I, StartI)
 when (I >= StartI) and (I < ?MAX_PERMUTATION_NUMBER) ->
-  NextPermutation = get_permutation(GeneratorPid, CurrentPermutation),
+  NextPermutation = get_permutation(GeneratorPid),
   drop_permutations(GeneratorPid, NextPermutation, [NextPermutation | Acc], I + 1, StartI);
 
 drop_permutations(GeneratorPid, CurrentPermutation, Acc, I, StartI) when I < StartI ->
-  NextPermutation = get_permutation(GeneratorPid, CurrentPermutation),
+  NextPermutation = get_permutation(GeneratorPid),
   drop_permutations(GeneratorPid, NextPermutation, Acc, I + 1, StartI).
 
 
@@ -61,11 +57,15 @@ generate_next_permutation(Permutation, PermutationSize) ->
 
 
 permutation_generator() ->
+  InitialPermutation = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  permutation_generator(InitialPermutation).
+
+permutation_generator(CurrentPermutation) ->
   receive
-    {SenderPid, get_permutation, CurrentPermutation} ->
+    {SenderPid, next} ->
       NextPermutation = generate_next_permutation(CurrentPermutation, length(CurrentPermutation)),
       SenderPid ! NextPermutation,
-      permutation_generator();
+      permutation_generator(NextPermutation);
 
     close -> closed
   end.
@@ -75,8 +75,8 @@ create_permutation_generator() -> spawn(fun () -> permutation_generator() end).
 
 close_permutation_generator(GeneratorPid) -> GeneratorPid ! close.
 
-get_permutation(GeneratorPid, Permutation) ->
-  GeneratorPid ! {self(), get_permutation, Permutation},
+get_permutation(GeneratorPid) ->
+  GeneratorPid ! {self(), next},
   receive NextPermutation -> NextPermutation after 5000 -> exit(timeout) end.
 
 
