@@ -1,6 +1,6 @@
 -module(lex_procs).
 
--export([find_million_permutation/0, find_million_permutation_by_drop/0]).
+-export([find_million_permutation/0]).
 
 -define(PERMUTATION_NUMBER, 1000000).
 -define(MAX_PERMUTATION_NUMBER, 4037913).
@@ -28,27 +28,6 @@ find_suffix_max(Permutation, I, Max) ->
   end.
 
 
-take_permutations(_, CurrentPermutation, I, Limit) when I >= Limit -> CurrentPermutation.
-
-take_permutations(GeneratorPid, I, Limit) when I < Limit ->
-  NextPermutation = get_permutation(GeneratorPid),
-  take_permutations(GeneratorPid, NextPermutation, I + 1, Limit).
-
-drop_permutations(_, CurrentPermutation, I, _) when I >= ?MAX_PERMUTATION_NUMBER -> lists:reverse(Acc);
-
-drop_permutations(GeneratorPid, CurrentPermutation, Acc, I, StartI)
-when (I >= StartI) and (I < ?MAX_PERMUTATION_NUMBER) ->
-  NextPermutation = get_permutation(GeneratorPid),
-  drop_permutations(GeneratorPid, NextPermutation, [NextPermutation | Acc], I + 1, StartI);
-
-drop_permutations(GeneratorPid, CurrentPermutation, Acc, I, StartI) when I < StartI ->
-  NextPermutation = get_permutation(GeneratorPid),
-  drop_permutations(GeneratorPid, NextPermutation, Acc, I + 1, StartI).
-
-
-drop_permutations(GeneratorPid, CurrentPermutation, Limit) ->
-  drop_permutations(GeneratorPid, CurrentPermutation, [], 1, Limit).
-
 generate_next_permutation(Permutation, PermutationSize) ->
   Suffix = find_suffix(Permutation, PermutationSize, lists:nth(PermutationSize, Permutation)),
   Min = find_suffix_max(Permutation, PermutationSize, lists:nth(Suffix, Permutation)),
@@ -56,9 +35,19 @@ generate_next_permutation(Permutation, PermutationSize) ->
   lists:append(FirstPart, lists:sort(SecondPart)).
 
 
+take_nth_permutation(GeneratorPid, I, Limit) when I >= Limit - 1 -> next_permutation(GeneratorPid);
+
+take_nth_permutation(GeneratorPid, I, Limit) when I < Limit - 1 ->
+  next_permutation(GeneratorPid),
+  take_nth_permutation(GeneratorPid, I + 1, Limit).
+
+
+take_nth_permutation(GeneratorPid, Limit) -> take_nth_permutation(GeneratorPid, 1, Limit).
+
 permutation_generator() ->
   InitialPermutation = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   permutation_generator(InitialPermutation).
+
 
 permutation_generator(CurrentPermutation) ->
   receive
@@ -75,22 +64,13 @@ create_permutation_generator() -> spawn(fun () -> permutation_generator() end).
 
 close_permutation_generator(GeneratorPid) -> GeneratorPid ! close.
 
-get_permutation(GeneratorPid) ->
+next_permutation(GeneratorPid) ->
   GeneratorPid ! {self(), next},
   receive NextPermutation -> NextPermutation after 5000 -> exit(timeout) end.
 
 
 find_million_permutation() ->
   GeneratorPid = create_permutation_generator(),
-  Permutations =
-    take_permutations(GeneratorPid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ?PERMUTATION_NUMBER),
+  Permutations = take_nth_permutation(GeneratorPid, ?PERMUTATION_NUMBER),
   close_permutation_generator(GeneratorPid),
-  lists:nth(?PERMUTATION_NUMBER - 1, Permutations).
-
-
-find_million_permutation_by_drop() ->
-  GeneratorPid = create_permutation_generator(),
-  Permutations =
-    drop_permutations(GeneratorPid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ?PERMUTATION_NUMBER - 1),
-  close_permutation_generator(GeneratorPid),
-  lists:nth(1, Permutations).
+  Permutations.
