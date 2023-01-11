@@ -35,14 +35,14 @@ generate_next_permutation(Permutation, PermutationSize) ->
   lists:append(FirstPart, lists:sort(SecondPart)).
 
 
-take_nth_permutation(GeneratorPid, I, Limit) when I >= Limit - 1 -> next_permutation(GeneratorPid);
+take_permutation(GeneratorPid, I, Limit) when I >= Limit - 1 -> next_permutation(GeneratorPid);
 
-take_nth_permutation(GeneratorPid, I, Limit) when I < Limit - 1 ->
+take_permutation(GeneratorPid, I, Limit) when I < Limit - 1 ->
   next_permutation(GeneratorPid),
-  take_nth_permutation(GeneratorPid, I + 1, Limit).
+  take_permutation(GeneratorPid, I + 1, Limit).
 
 
-take_nth_permutation(GeneratorPid, Limit) -> take_nth_permutation(GeneratorPid, 1, Limit).
+take_permutation(GeneratorPid, Limit) -> take_permutation(GeneratorPid, 1, Limit).
 
 permutation_generator() ->
   InitialPermutation = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -71,6 +71,6 @@ next_permutation(GeneratorPid) ->
 
 find_million_permutation() ->
   GeneratorPid = create_permutation_generator(),
-  Permutations = take_nth_permutation(GeneratorPid, ?PERMUTATION_NUMBER),
+  Permutations = take_permutation(GeneratorPid, ?PERMUTATION_NUMBER),
   close_permutation_generator(GeneratorPid),
   Permutations.
